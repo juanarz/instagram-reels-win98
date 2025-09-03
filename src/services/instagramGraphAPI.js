@@ -257,4 +257,7 @@ class InstagramGraphAPI {
   }
 }
 
-export default new InstagramGraphAPI();
+const instagramAPI = new InstagramGraphAPI();
+
+export { InstagramGraphAPI };
+export default instagramAPI;

@@ -1,30 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import instagramAPI from '../services/instagramGraphAPI';
+import React, { useState, useEffect, useCallback } from 'react';
+import { InstagramGraphAPI } from '../services/instagramGraphAPI';
+
+const instagramAPI = new InstagramGraphAPI();
 
 const InstagramAuth = ({ onAuthSuccess, onAuthError }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    // Check if we're returning from Instagram OAuth
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    const errorParam = urlParams.get('error');
-
-    if (errorParam) {
-      setError('Authentication cancelled or failed');
-      onAuthError?.(errorParam);
-      // Clean URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-      return;
-    }
-
-    if (code) {
-      handleAuthCallback(code);
-    }
-  }, []);
-
-  const handleAuthCallback = async (code) => {
+  const handleAuthCallback = useCallback(async (code) => {
     setIsLoading(true);
     setError(null);
 
@@ -46,7 +29,26 @@ const InstagramAuth = ({ onAuthSuccess, onAuthError }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [onAuthSuccess, onAuthError]);
+
+  useEffect(() => {
+    // Check if we're returning from Instagram OAuth
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const errorParam = urlParams.get('error');
+
+    if (errorParam) {
+      setError('Authentication cancelled or failed');
+      onAuthError?.(errorParam);
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+
+    if (code) {
+      handleAuthCallback(code);
+    }
+  }, [handleAuthCallback, onAuthError]);
 
   const handleLogin = () => {
     const authUrl = instagramAPI.getAuthUrl();
