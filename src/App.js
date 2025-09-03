@@ -3,73 +3,115 @@ import './index.css';
 import InstagramAuth from './components/InstagramAuth';
 import instagramAPI from './services/instagramGraphAPI';
 
-// Sample Instagram reels data
-const sampleReels = [
+// Utility function to calculate engagement rate
+const calculateEngagementRate = (likes, comments, shares, views) => {
+  const totalEngagements = likes + comments + shares;
+  return ((totalEngagements / views) * 100).toFixed(2);
+};
+
+// Real Instagram reels data
+const realReels = [
   {
     id: 1,
-    title: "Dancing Tutorial",
-    thumbnail: "🕺",
-    views: 125000,
-    likes: 8500,
-    comments: 342,
-    shares: 156,
-    saves: 89,
-    date: "2024-01-15"
+    title: "POV: Le pides un lápiz al de sistemas",
+    thumbnail: "/imgs/reels covers/pov_le pides un lápiz al de sistemas.png",
+    instagramUrl: "https://www.instagram.com/p/DF_g4Y9MQKp/",
+    views: 874058,
+    likes: 67380,
+    comments: 172,
+    shares: 16932,
+    saves: 2092,
+    date: "2024-01-15",
+    accountsReached: 605291,
+    interactions: 86576,
+    accountsEngaged: 78454,
+    profileActivity: 145,
+    follows: 145
   },
   {
     id: 2,
-    title: "Cooking Recipe",
-    thumbnail: "👨‍🍳",
-    views: 89000,
-    likes: 6200,
-    comments: 278,
-    shares: 234,
-    saves: 145,
-    date: "2024-01-12"
+    title: "Seguridad ante todo",
+    thumbnail: "/imgs/reels covers/seguridad ante todo.png",
+    instagramUrl: "https://www.instagram.com/p/DICX4_TS2VQ/",
+    views: 2806994,
+    likes: 131919,
+    comments: 78,
+    shares: 15055,
+    saves: 2164,
+    date: "2024-01-12",
+    accountsReached: 1512344,
+    interactions: 149216,
+    accountsEngaged: 138970,
+    profileActivity: 175,
+    follows: 175
   },
   {
     id: 3,
-    title: "Travel Vlog",
-    thumbnail: "✈️",
-    views: 156000,
-    likes: 12300,
-    comments: 567,
-    shares: 289,
-    saves: 234,
-    date: "2024-01-10"
+    title: "POV: Se te cae tu botella en San Gil",
+    thumbnail: "/imgs/reels covers/pov_se te cae tu botella en san gil.png",
+    instagramUrl: "https://www.instagram.com/p/DL0BtdVMXup/",
+    views: 1209592,
+    likes: 70633,
+    comments: 769,
+    shares: 12757,
+    saves: 1362,
+    date: "2024-01-10",
+    accountsReached: 853531,
+    interactions: 85521,
+    accountsEngaged: 78034,
+    profileActivity: 732,
+    follows: 732
   },
   {
     id: 4,
-    title: "Tech Review",
-    thumbnail: "📱",
-    views: 78000,
-    likes: 4500,
-    comments: 189,
-    shares: 123,
-    saves: 67,
-    date: "2024-01-08"
+    title: "Qué prenda te daría pena traer a la U",
+    thumbnail: "/imgs/reels covers/Que prenda te daría pena traer a la u.png",
+    instagramUrl: "https://www.instagram.com/p/DDvl2vAskef/",
+    views: 778939,
+    likes: 41559,
+    comments: 239,
+    shares: 6284,
+    saves: 1419,
+    date: "2024-01-08",
+    accountsReached: 514950,
+    interactions: 49501,
+    accountsEngaged: 45272,
+    profileActivity: 229,
+    follows: 229
   },
   {
     id: 5,
-    title: "Fitness Routine",
-    thumbnail: "💪",
-    views: 203000,
-    likes: 15600,
-    comments: 678,
-    shares: 345,
-    saves: 289,
-    date: "2024-01-05"
+    title: "POV: Te gradúas de ingeniero",
+    thumbnail: "/imgs/reels covers/pov_te graduas de ingeniero.png",
+    instagramUrl: "https://www.instagram.com/p/DKU5xY3OrLQ/",
+    views: 404739,
+    likes: 30947,
+    comments: 32,
+    shares: 8830,
+    saves: 905,
+    date: "2024-01-05",
+    accountsReached: 280806,
+    interactions: 40714,
+    accountsEngaged: 37283,
+    profileActivity: 68,
+    follows: 68
   },
   {
     id: 6,
-    title: "Art Tutorial",
-    thumbnail: "🎨",
-    views: 67000,
-    likes: 3800,
-    comments: 156,
-    shares: 89,
-    saves: 123,
-    date: "2024-01-03"
+    title: "Mi última diapositiva",
+    thumbnail: "/imgs/reels covers/Mi última diapositiva.png",
+    instagramUrl: "https://www.instagram.com/p/DBcIQlMyzRN/",
+    views: 5500000,
+    likes: 600000,
+    comments: 1200,
+    shares: 45000,
+    saves: 8500,
+    date: "2024-01-01",
+    accountsReached: 3200000,
+    interactions: 654700,
+    accountsEngaged: 598000,
+    profileActivity: 1150,
+    follows: 1150
   }
 ];
 
@@ -104,7 +146,7 @@ const ReelWindow = ({ reel }) => {
   return (
     <div className="win98-window">
       <div className="win98-title-bar">
-        <span>📹 {reel.title}</span>
+        <span>🖼️ {reel.title}</span>
         <div className="win98-title-buttons">
           <button 
             className="win98-button"
@@ -119,7 +161,51 @@ const ReelWindow = ({ reel }) => {
       </div>
       <div className="win98-content">
         <div className="reel-thumbnail">
-          <div style={{ fontSize: '48px' }}>{reel.thumbnail}</div>
+          {reel.thumbnail.startsWith('/imgs/') ? (
+            <img 
+              src={process.env.PUBLIC_URL + reel.thumbnail} 
+              alt={reel.title}
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+          ) : null}
+          <div 
+            style={{ 
+              fontSize: '48px',
+              display: reel.thumbnail.startsWith('/imgs/') ? 'none' : 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%'
+            }}
+          >
+            {reel.thumbnail.startsWith('/imgs/') ? '' : reel.thumbnail}
+          </div>
+          
+          <button 
+            onClick={() => window.open(reel.instagramUrl, '_blank')}
+            style={{
+              position: 'absolute',
+              bottom: '8px',
+              right: '8px',
+              padding: '4px 8px',
+              fontSize: '10px',
+              fontWeight: 'bold',
+              background: 'linear-gradient(to bottom, #dfdfdf 0%, #c0c0c0 100%)',
+              border: '1px outset #c0c0c0',
+              cursor: 'pointer',
+              borderRadius: '2px',
+              color: '#000',
+              fontFamily: 'Tahoma, sans-serif'
+            }}
+            onMouseDown={(e) => e.target.style.border = '1px inset #c0c0c0'}
+            onMouseUp={(e) => e.target.style.border = '1px outset #c0c0c0'}
+            onMouseLeave={(e) => e.target.style.border = '1px outset #c0c0c0'}
+          >
+            Go
+          </button>
         </div>
         
         <div style={{ marginBottom: '8px', fontSize: '11px', fontWeight: 'bold' }}>
@@ -135,35 +221,56 @@ const ReelWindow = ({ reel }) => {
           </thead>
           <tbody>
             <tr>
-              <td>👁️ Views</td>
-              <td>{formatNumber(reel.views)}</td>
+              <td><strong>👁️ Views</strong></td>
+              <td><strong>{formatNumber(reel.views)}</strong></td>
             </tr>
             <tr>
-              <td>❤️ Likes</td>
-              <td>{formatNumber(reel.likes)}</td>
+              <td><strong>📊 Accounts Reached</strong></td>
+              <td><strong>{formatNumber(reel.accountsReached)}</strong></td>
             </tr>
             <tr>
-              <td>💬 Comments</td>
-              <td>{formatNumber(reel.comments)}</td>
+              <td><strong>❤️ Likes</strong></td>
+              <td><strong>{formatNumber(reel.likes)}</strong></td>
             </tr>
             <tr>
-              <td>📤 Shares</td>
-              <td>{formatNumber(reel.shares)}</td>
+              <td><strong>💬 Comments</strong></td>
+              <td><strong>{formatNumber(reel.comments)}</strong></td>
             </tr>
             <tr>
-              <td>🔖 Saves</td>
-              <td>{formatNumber(reel.saves)}</td>
+              <td><strong>🔖 Saves</strong></td>
+              <td><strong>{formatNumber(reel.saves)}</strong></td>
             </tr>
             <tr>
-              <td>📅 Date</td>
-              <td>{reel.date}</td>
+              <td><strong>📤 Shares</strong></td>
+              <td><strong>{formatNumber(reel.shares)}</strong></td>
+            </tr>
+            <tr>
+              <td><strong>🤝 Interactions</strong></td>
+              <td><strong>{formatNumber(reel.interactions)}</strong></td>
+            </tr>
+            <tr>
+              <td><strong>👥 Accounts Engaged</strong></td>
+              <td><strong>{formatNumber(reel.accountsEngaged)}</strong></td>
+            </tr>
+            <tr>
+              <td><strong>📈 Profile Activity</strong></td>
+              <td><strong>{formatNumber(reel.profileActivity)}</strong></td>
+            </tr>
+            <tr>
+              <td><strong>➕ Follows</strong></td>
+              <td><strong>{formatNumber(reel.follows)}</strong></td>
+            </tr>
+            <tr>
+              <td><strong>📊 Engagement Rate</strong></td>
+              <td><strong>{calculateEngagementRate(reel.likes, reel.comments, reel.shares, reel.views)}%</strong></td>
             </tr>
           </tbody>
         </table>
         
-        <div style={{ marginTop: '8px', padding: '4px', background: '#f0f0f0', border: '1px insetrgb(9, 9, 9)', fontSize: '10px' }}>
-          Engagement Rate: {((reel.likes + reel.comments + reel.shares) / reel.views * 100).toFixed(2)}%
+        <div style={{ marginTop: '8px', padding: '4px', background: '#f0f0f0', border: '1px inset #c0c0c0', fontSize: '10px' }}>
+          Engagement Rate: {calculateEngagementRate(reel.likes, reel.comments, reel.shares, reel.views)}%
         </div>
+        
       </div>
     </div>
   );
@@ -285,7 +392,7 @@ const StartBar = () => {
 
 function App() {
   const [showStatsPopup, setShowStatsPopup] = useState(false);
-  const [reelsData, setReelsData] = useState(sampleReels);
+  const [reelsData, setReelsData] = useState(realReels);
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState(null);
@@ -340,6 +447,87 @@ function App() {
           }}>
             📹 Instagram Reels Statistics - Windows 98 Edition
           </h1>
+        </div>
+        
+        <div className="paint-thumbnail">
+          <div className="paint-title-bar">
+            <div className="paint-title">
+              🎨 untitled - Paint
+            </div>
+            <div className="paint-buttons">
+              <button className="paint-btn">_</button>
+              <button className="paint-btn">□</button>
+              <button className="paint-btn">×</button>
+            </div>
+          </div>
+          <div className="paint-content">
+            <div className="led-text">
+              <div className="scrolling-container">
+                <div className="scrolling-text">
+                  Hola! Soy Juan Pablo, Creador de Contenido
+                  <span className="scrolling-text-copy">Hola! Soy Juan Pablo, Creador de Contenido</span>
+                </div>
+              </div>
+            </div>
+            <div style={{ 
+              padding: '10px', 
+              fontFamily: 'Poppins, sans-serif', 
+              fontSize: '14px', 
+              textAlign: 'center',
+              color: '#000'
+            }}>
+              (programo por comida también🥺) <br/>
+              @juan_aarias<br/>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                gap: '10px',
+                margin: '10px 0'
+              }}>
+                <a 
+                  href="https://www.instagram.com/juan_aarias/reels/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <img 
+                    src={process.env.PUBLIC_URL + "/imgs/reels covers/Instagram-Logo-2010-2011-removebg-preview.png"} 
+                    alt="Instagram" 
+                    style={{ 
+                      width: '40px', 
+                      height: '40px', 
+                      cursor: 'pointer',
+                      transition: 'transform 0.2s ease'
+                    }}
+                    onMouseOver={(e) => e.target.style.transform = 'scale(1.1)'}
+                    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                  />
+                </a>
+                <a 
+                  href="https://www.tiktok.com/@juan_aarias" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <img 
+                    src={process.env.PUBLIC_URL + "/imgs/reels covers/Tiktok-Logo-2017-removebg-preview.png"} 
+                    alt="TikTok" 
+                    style={{ 
+                      width: '40px', 
+                      height: '40px', 
+                      cursor: 'pointer',
+                      transition: 'transform 0.2s ease'
+                    }}
+                    onMouseOver={(e) => e.target.style.transform = 'scale(1.1)'}
+                    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                  />
+                </a>
+              </div>
+              <strong>@juan_aarias</strong><br/>
+               Aquí tienes las estadísticas de mis reels más populares!
+            </div>
+          </div>
         </div>
       </div>
 
@@ -411,3 +599,4 @@ function App() {
 }
 
 export default App;
+

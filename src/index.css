@@ -28,6 +28,15 @@ body {
   border: 2px outset #c0c0c0;
   margin-bottom: 20px;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.win98-window:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 4px 8px 16px rgba(0,0,0,0.4);
+  border: 2px outset #d0d0d0;
+  background: #d0d0d0;
 }
 
 .win98-title-bar {
@@ -39,6 +48,12 @@ body {
   align-items: center;
   font-size: 11px;
   font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.win98-window:hover .win98-title-bar {
+  background: linear-gradient(90deg, #0066ff 0%, #0033cc 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .win98-title-buttons {
@@ -51,11 +66,20 @@ body {
   height: 14px;
   background: #c0c0c0;
   border: 1px outset #c0c0c0;
+  padding: 1px 4px;
+  font-family: 'MS Sans Serif', sans-serif;
   font-size: 8px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  min-width: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  line-height: 1;
+}
+
+.win98-button:hover {
+  background: #d0d0d0;
 }
 
 .win98-button:active {
@@ -65,6 +89,11 @@ body {
 .win98-content {
   padding: 8px;
   background: #c0c0c0;
+  transition: all 0.3s ease;
+}
+
+.win98-window:hover .win98-content {
+  background: #d0d0d0;
 }
 
 .start-bar {
@@ -147,6 +176,12 @@ body {
   width: 100%;
   border-collapse: collapse;
   font-size: 11px;
+  transition: all 0.3s ease;
+}
+
+.win98-window:hover .stats-table {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .stats-table th,
@@ -155,6 +190,12 @@ body {
   padding: 4px 8px;
   text-align: left;
   font-size: 10px;
+  transition: all 0.2s ease;
+}
+
+.stats-table tr:hover td {
+  background: #e8e8e8;
+  transform: translateX(2px);
 }
 
 .stats-table th {
@@ -173,6 +214,31 @@ body {
   color: white;
   font-size: 12px;
   margin-bottom: 8px;
+  transition: all 0.4s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.reel-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 2px;
+}
+
+.win98-window:hover .reel-thumbnail {
+  background: linear-gradient(45deg, #000 0%, #333 100%);
+  border: 1px inset #666;
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.1);
+}
+
+.reel-thumbnail > div {
+  transition: all 0.4s ease;
+}
+
+.win98-window:hover .reel-thumbnail > div {
+  transform: scale(1.1) rotate(5deg);
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
 }
 
 @media (max-width: 768px) {
@@ -188,5 +254,209 @@ body {
   
   .win98-desktop {
     padding: 10px;
+  }
+}
+
+/* Paint Window Styling */
+.paint-thumbnail {
+  background: #c0c0c0;
+  border: 2px outset #c0c0c0;
+  margin: 16px auto;
+  max-width: 500px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.paint-thumbnail:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 4px 8px 16px rgba(0,0,0,0.4);
+  border: 2px outset #d0d0d0;
+  background: #d0d0d0;
+}
+
+.paint-thumbnail:hover .paint-title-bar {
+  background: linear-gradient(90deg, #0066ff 0%, #0033cc 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.paint-thumbnail .paint-content {
+  font-family: 'Poppins', sans-serif;
+  background: #f0f0f0;
+  padding: 15px;
+}
+
+.paint-thumbnail:hover .paint-content {
+  background: #f0f0f0;
+}
+
+.paint-title-bar {
+  background: linear-gradient(to right, #0000ff 0%, #000080 100%);
+  color: white;
+  padding: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.paint-title {
+  padding-left: 4px;
+}
+
+.paint-buttons {
+  display: flex;
+  gap: 2px;
+}
+
+.paint-btn {
+  width: 16px;
+  height: 14px;
+  background: #c0c0c0;
+  border: 1px outset #c0c0c0;
+  padding: 1px 4px;
+  font-family: 'MS Sans Serif', sans-serif;
+  font-size: 8px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  min-width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.paint-btn:hover {
+  background: #d0d0d0;
+}
+
+.paint-btn:active {
+  border: 1px inset #c0c0c0;
+}
+
+.paint-content {
+  background: white;
+  border: 2px inset #c0c0c0;
+  margin: 4px;
+  padding: 8px;
+  min-height: 60px;
+}
+
+.paint-color-palette {
+  background: #c0c0c0;
+  border-top: 1px solid #808080;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.color-row {
+  display: flex;
+  gap: 1px;
+  justify-content: center;
+}
+
+.color-box {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #000;
+  cursor: pointer;
+}
+
+.color-box:hover {
+  border: 2px solid #fff;
+  width: 14px;
+  height: 14px;
+}
+
+/* LED Scrolling Text Effect */
+.led-text {
+  background: #000;
+  color: #26fc00;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 1.1em;
+  padding: 0 10px;
+  border: 2px inset #c0c0c0;
+  margin: 10px auto;
+  position: relative;
+  text-shadow: 0 0 3px #00ff00;
+  border-radius: 3px;
+  min-width: 300px;
+  max-width: 100%;
+  height: 40px;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scrolling-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.led-text::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.3), transparent);
+  animation: ledScan 3s infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes ledScan {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.scrolling-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.scrolling-text {
+  position: absolute;
+  white-space: nowrap;
+  will-change: transform;
+  animation: scroll 10s linear infinite;
+  left: 0;
+  padding-left: 100%;
+  display: flex;
+  gap: 20px;
+  box-sizing: border-box;
+  font-size: 0.9em;
+  height: 100%;
+  align-items: center;
+}
+
+.scrolling-text-copy {
+  display: inline-block;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-100% - 20px));
   }
 }
