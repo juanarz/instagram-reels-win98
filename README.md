@@ -2,7 +2,7 @@
 
 Una página web React con estilo retro de Windows 98 que muestra estadísticas de reels de Instagram más populares.
 
-🌐 **Demo en vivo**: [Ver aplicación](https://tu-usuario-github.github.io/instagram-reels-win98/)
+🌐 **Demo en vivo**: [Ver aplicación](https://juanarz.github.io/instagram-reels-win98/)
 
 ## Características
 
