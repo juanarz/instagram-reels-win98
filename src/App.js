@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
 import InstagramAuth from './components/InstagramAuth';
+import Clippy from './components/Clippy';
 import instagramAPI from './services/instagramGraphAPI';
 
 // Utility function to calculate engagement rate
@@ -449,84 +450,103 @@ function App() {
           </h1>
         </div>
         
-        <div className="paint-thumbnail">
-          <div className="paint-title-bar">
-            <div className="paint-title">
-              🎨 untitled - Paint
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          position: 'relative',
+          maxWidth: '800px',
+          margin: '0 auto',
+          padding: '0 10px'
+        }}>
+          <div className="paint-thumbnail">
+            <div className="paint-title-bar">
+              <div className="paint-title">
+                🎨 untitled - Paint
+              </div>
+              <div className="paint-buttons">
+                <button className="paint-btn">_</button>
+                <button className="paint-btn">□</button>
+                <button className="paint-btn">×</button>
+              </div>
             </div>
-            <div className="paint-buttons">
-              <button className="paint-btn">_</button>
-              <button className="paint-btn">□</button>
-              <button className="paint-btn">×</button>
-            </div>
-          </div>
-          <div className="paint-content">
-            <div className="led-text">
-              <div className="scrolling-container">
-                <div className="scrolling-text">
-                  Hola! Soy Juan Pablo, Creador de Contenido
-                  <span className="scrolling-text-copy">Hola! Soy Juan Pablo, Creador de Contenido</span>
+            <div className="paint-content">
+              <div className="led-text">
+                <div className="scrolling-container">
+                  <div className="scrolling-text">
+                    Hola! Soy Juan Pablo, Creador de Contenido
+                    <span className="scrolling-text-copy">Hola! Soy Juan Pablo, Creador de Contenido</span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div style={{ 
-              padding: '10px', 
-              fontFamily: 'Poppins, sans-serif', 
-              fontSize: '14px', 
-              textAlign: 'center',
-              color: '#000'
-            }}>
-              (programo por comida también🥺) <br/>
-              @juan_aarias<br/>
               <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                gap: '10px',
-                margin: '10px 0'
+                padding: '10px', 
+                fontFamily: 'Poppins, sans-serif', 
+                fontSize: '14px', 
+                textAlign: 'center',
+                color: '#000'
               }}>
-                <a 
-                  href="https://www.instagram.com/juan_aarias/reels/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <img 
-                    src={process.env.PUBLIC_URL + "/imgs/reels covers/Instagram-Logo-2010-2011-removebg-preview.png"} 
-                    alt="Instagram" 
-                    style={{ 
-                      width: '40px', 
-                      height: '40px', 
-                      cursor: 'pointer',
-                      transition: 'transform 0.2s ease'
-                    }}
-                    onMouseOver={(e) => e.target.style.transform = 'scale(1.1)'}
-                    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
-                  />
-                </a>
-                <a 
-                  href="https://www.tiktok.com/@juan_aarias" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <img 
-                    src={process.env.PUBLIC_URL + "/imgs/reels covers/Tiktok-Logo-2017-removebg-preview.png"} 
-                    alt="TikTok" 
-                    style={{ 
-                      width: '40px', 
-                      height: '40px', 
-                      cursor: 'pointer',
-                      transition: 'transform 0.2s ease'
-                    }}
-                    onMouseOver={(e) => e.target.style.transform = 'scale(1.1)'}
-                    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
-                  />
-                </a>
+                (programo por comida también🥺) <br/>
+                @juan_aarias<br/>
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  gap: '10px',
+                  margin: '10px 0'
+                }}>
+                  <a 
+                    href="https://www.instagram.com/juan_aarias/reels/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <img 
+                      src={process.env.PUBLIC_URL + "/imgs/reels covers/Instagram-Logo-2010-2011-removebg-preview.png"} 
+                      alt="Instagram" 
+                      style={{ 
+                        width: '40px', 
+                        height: '40px', 
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s ease'
+                      }}
+                      onMouseOver={(e) => e.target.style.transform = 'scale(1.1)'}
+                      onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                    />
+                  </a>
+                  <a 
+                    href="https://www.tiktok.com/@juan_aarias" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <img 
+                      src={process.env.PUBLIC_URL + "/imgs/reels covers/Tiktok-Logo-2017-removebg-preview.png"} 
+                      alt="TikTok" 
+                      style={{ 
+                        width: '40px', 
+                        height: '40px', 
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s ease'
+                      }}
+                      onMouseOver={(e) => e.target.style.transform = 'scale(1.1)'}
+                      onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+                    />
+                  </a>
+                </div>
+                <strong>@juan_aarias</strong><br/>
+                Aquí tienes las estadísticas de mis reels más populares!
               </div>
-              <strong>@juan_aarias</strong><br/>
-               Aquí tienes las estadísticas de mis reels más populares!
             </div>
+          </div>
+          
+          <div style={{ 
+            position: 'absolute', 
+            right: '10px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 2
+          }}>
+            <Clippy />
           </div>
         </div>
       </div>

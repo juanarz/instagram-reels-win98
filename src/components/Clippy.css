@@ -1,0 +1,322 @@
+/* Clippy Container */
+.clippy-container {
+  position: relative;
+  display: inline-block;
+  z-index: 1000;
+}
+
+/* Clippy Character */
+.clippy {
+  display: none; /* Hide the CSS-drawn Clippy since we're using an image */
+}
+
+/* Eyes */
+.clippy-eyes {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.clippy-eye {
+  width: 10px;
+  height: 10px;
+  background-color: #000;
+  border-radius: 50%;
+  position: relative;
+}
+
+/* Mouth */
+.clippy-mouth {
+  position: absolute;
+  bottom: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 10px;
+  border-bottom: 2px solid #000;
+  border-radius: 0 0 10px 10px;
+}
+
+/* Paperclip details */
+.clippy-bend {
+  position: absolute;
+  top: 15%;
+  right: 10%;
+  width: 20px;
+  height: 30px;
+  border: 2px solid #000;
+  border-radius: 0 10px 10px 0;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+.clippy-foot {
+  position: absolute;
+  top: 30%;
+  right: 15%;
+  width: 10px;
+  height: 15px;
+  background-color: #ffc0cb;
+  transform: rotate(45deg);
+  z-index: -1;
+}
+
+/* Balloon */
+.clippy-balloon {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ffffa1;
+  border: 2px solid #000;
+  border-radius: 4px;
+  padding: 8px 12px;
+  min-width: 160px;
+  max-width: 90vw;
+  width: max-content;
+  max-width: min(90vw, 220px);
+  box-sizing: border-box;
+  box-shadow: 2px 2px 0 0 #000;
+  font-family: 'MS Sans Serif', Tahoma, sans-serif;
+  font-size: clamp(10px, 3vw, 13px);
+  text-align: center;
+  line-height: 1.3;
+  z-index: 10;
+  white-space: normal;
+  word-wrap: break-word;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes floatUp {
+  from { 
+    opacity: 0;
+    transform: translateX(-30%) translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateX(-30%) translateY(10px);
+  }
+}
+
+.balloon-arrow {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background-color: #ffffa1;
+  border-right: 2px solid #000;
+  border-bottom: 2px solid #000;
+  z-index: 1;
+  display: none; /* Hide the arrow for now */
+}
+
+/* Close button */
+.close-button {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  font-family: Arial, sans-serif;
+  z-index: 3;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background-color: #ff0000;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Balloon content */
+.balloon-content {
+  position: relative;
+  z-index: 2;
+}
+
+.balloon-text {
+  padding: 4px 0;
+  font-weight: bold;
+  color: #000;
+  text-align: center;
+}
+
+.typing {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid #000;
+  animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: #000; }
+}
+
+.balloon-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+  margin-top: 5px;
+}
+
+.win98-button {
+  background: #c0c0c0;
+  border: 2px solid #fff;
+  border-right-color: #808080;
+  border-bottom-color: #808080;
+  padding: 4px 12px;
+  font-family: 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+  cursor: pointer;
+  box-shadow: -1px -1px 0 0 #000;
+  outline: none;
+}
+
+.win98-button:active {
+  border: 2px solid #808080;
+  border-right-color: #fff;
+  border-bottom-color: #fff;
+  box-shadow: -1px -1px 0 0 #c0c0c0;
+}
+
+/* Animations */
+@keyframes blink {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.1); }
+}
+
+@keyframes jump {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes balloonAppear {
+  from { opacity: 0; transform: scale(0.8) translateX(-10px); }
+  to { opacity: 1; transform: scale(1) translateX(0); }
+}
+
+.clippy {
+  animation: float 3s ease-in-out infinite;
+}
+
+.blink {
+  animation: blink 0.3s ease-in-out;
+}
+
+.jump {
+  animation: jump 0.5s ease-in-out;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .clippy-balloon {
+    padding: 6px 10px;
+    min-width: 140px;
+  }
+}
+
+@media (max-width: 768px) {
+  .clippy-container {
+    position: relative;
+    margin-top: 15px;
+  }
+  
+  .clippy-balloon {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 180px;
+    padding: 6px 8px;
+  }
+  
+  .clippy-image {
+    width: 70px !important;
+    height: 70px !important;
+  }
+  
+  .balloon-arrow {
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+  }
+  
+  .balloon-content {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .balloon-buttons {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .clippy {
+    width: 60px !important;
+    height: 60px !important;
+    bottom: 10px;
+    right: 10px;
+  }
+  
+  .clippy-balloon {
+    max-width: 160px;
+    font-size: 11px;
+    padding: 5px 8px;
+    width: 150px;
+    right: 70px;
+  }
+  
+  .clippy-image {
+    width: 60px !important;
+    height: 60px !important;
+  }
+  
+  .balloon-text {
+    white-space: normal;
+    max-width: 100%;
+    word-break: break-word;
+  }
+  
+  .clippy-bend {
+    width: 15px;
+    height: 25px;
+  }
+  
+  .clippy-eye {
+    width: 8px;
+    height: 8px;
+  }
+}
