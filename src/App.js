@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import './index.css';
 import InstagramAuth from './components/InstagramAuth';
 import Clippy from './components/Clippy';
+import ReelInsight from './components/ReelInsight';
 import instagramAPI from './services/instagramGraphAPI';
 
-// Utility function to calculate engagement rate
+// Utility function   to calculate engagement rate
 const calculateEngagementRate = (likes, comments, shares, views) => {
   const totalEngagements = likes + comments + shares;
   return ((totalEngagements / views) * 100).toFixed(2);
@@ -118,6 +119,7 @@ const realReels = [
 
 const ReelWindow = ({ reel }) => {
   const [isMinimized, setIsMinimized] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
 
   const formatNumber = (num) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -147,20 +149,29 @@ const ReelWindow = ({ reel }) => {
   return (
     <div className="win98-window">
       <div className="win98-title-bar">
-        <span>🖼️ {reel.title}</span>
+        <span>🖼️ {reel.title} - {formatNumber(reel.views)} vistas</span>
         <div className="win98-title-buttons">
           <button 
             className="win98-button"
+            onClick={() => setShowInsights(!showInsights)}
+            title={showInsights ? 'Ocultar análisis' : 'Mostrar análisis'}
+            style={{ marginRight: '4px' }}
+          >
+            📊
+          </button>
+          <button 
+            className="win98-button"
             onClick={() => setIsMinimized(true)}
-            title="Minimize"
+            title="Minimizar"
           >
             _
           </button>
-          <button className="win98-button" title="Maximize">□</button>
-          <button className="win98-button" title="Close">×</button>
+          <button className="win98-button" title="Maximizar">□</button>
+          <button className="win98-button" title="Cerrar">×</button>
         </div>
       </div>
       <div className="win98-content">
+        {showInsights && <ReelInsight reel={reel} />}
         <div className="reel-thumbnail">
           {reel.thumbnail.startsWith('/imgs/') ? (
             <img 
@@ -179,7 +190,9 @@ const ReelWindow = ({ reel }) => {
               alignItems: 'center',
               justifyContent: 'center',
               width: '100%',
-              height: '100%'
+              height: '100%',
+              backgroundColor: '#f0f0f0',
+              border: '1px dashed #ccc'
             }}
           >
             {reel.thumbnail.startsWith('/imgs/') ? '' : reel.thumbnail}
