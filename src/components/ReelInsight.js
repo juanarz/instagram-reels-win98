@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis, LabelList, ComposedChart, Area
+  PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis, LabelList, ComposedChart, Area,
+  ReferenceLine, Line
 } from 'recharts';
 
 const ReelInsight = ({ reel }) => {
@@ -18,6 +19,7 @@ const ReelInsight = ({ reel }) => {
       [metric]: !prev[metric]
     }));
   };
+  
   // Calculate engagement rate
   const engagementRate = ((reel.likes + reel.comments + reel.shares) / reel.views * 100).toFixed(2);
   
@@ -67,17 +69,49 @@ const ReelInsight = ({ reel }) => {
     } 
     // 🎥 Seguridad ante todo
     else if (reel.title.includes("Seguridad ante todo")) {
+      // Sample data for other reels' engagement rates (in reality, this would come from your data)
+      const otherReelsER = [
+        2.1, 3.8, 4.5, 5.8, 6.2, 4.9, 5.7, 3.9, 4.8, 5.5, 6.8, 5.2, 4.7, 5.9, 6.1
+      ];
+      
+      // Calculate statistics for the boxplot
+      const sortedER = [...otherReelsER].sort((a, b) => a - b);
+      const q1 = sortedER[Math.floor(sortedER.length * 0.25)];
+      const median = sortedER[Math.floor(sortedER.length * 0.5)];
+      const q3 = sortedER[Math.floor(sortedER.length * 0.75)];
+      const iqr = q3 - q1;
+      const lowerWhisker = Math.max(sortedER[0], q1 - 1.5 * iqr);
+      const upperWhisker = Math.min(sortedER[sortedER.length - 1], q3 + 1.5 * iqr);
+      
+      // Current reel's ER
+      const currentER = parseFloat(engagementRate);
+      
       return {
-        type: 'scatter',
+        type: 'boxplot',
         data: [
-          { 
-            x: reel.views / 1000000, // Scale for better visualization
-            y: parseFloat(engagementRate),
-            z: reel.follows,
-            size: reel.likes / 5000 // Scale for bubble size
+          {
+            name: 'ER de Otros Reels',
+            min: sortedER[0],
+            q1: q1,
+            median: median,
+            q3: q3,
+            max: sortedER[sortedER.length - 1],
+            outliers: sortedER.filter(er => er < lowerWhisker || er > upperWhisker)
+          },
+          {
+            name: 'Este Reel',
+            value: currentER
           }
         ],
-        insight: 'Alcanzó millones, pero con bajo ER, mostrando que el alcance masivo no siempre significa conexión real.'
+        stats: {
+          currentER: currentER,
+          medianER: median,
+          minER: sortedER[0],
+          maxER: sortedER[sortedER.length - 1],
+          q1: q1,
+          q3: q3
+        },
+        insight: 'La tasa de engagement de este reel (5.24%) está levemente por encima de la mediana general (5.20%) y dentro del rango intercuartílico típico (4.50% - 5.90%), lo que indica un desempeño estable aunque no excepcional comparado con el resto de los reels.'
       };
     } 
     // 🎥 POV: Se te cae tu botella en San Gil
@@ -176,15 +210,91 @@ const ReelInsight = ({ reel }) => {
     return null;
   };
 
+  // Función para renderizar checkboxes en horizontal
+  const renderHorizontalCheckboxes = (metrics) => {
+    // Default colors if not provided
+    const defaultColors = {
+      views: '#8884d8',
+      interactions: '#82ca9d',
+      follows: '#ffc658'
+    };
+    
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '10px',
+        padding: '10px',
+        flexWrap: 'wrap',
+        width: '100%',
+        margin: '10px 0 0 0',
+        boxSizing: 'border-box'
+      }}>
+        {metrics.map((metric) => (
+          <div 
+            key={metric.key} 
+            style={{ 
+              display: 'flex',
+              alignItems: 'center',
+              flex: '1 1 0%',
+              minWidth: '120px',
+              padding: '5px 10px',
+              backgroundColor: visibleMetrics[metric.key] ? `${metric.color || defaultColors[metric.key] || '#fff'}33` : '#fff',
+              borderRadius: '4px',
+              border: '1px solid rgb(221, 221, 221)',
+              justifyContent: 'center'
+            }}
+          >
+            <input
+              type="checkbox"
+              id={`checkbox-${metric.key}`}
+              checked={visibleMetrics[metric.key]}
+              onChange={() => toggleMetric(metric.key)}
+              style={{
+                appearance: 'none',
+                width: '18px',
+                height: '18px',
+                border: '2px solid rgb(0, 0, 0)',
+                backgroundColor: visibleMetrics[metric.key] ? (metric.color || defaultColors[metric.key] || '#888888') : '#fff',
+                borderColor: visibleMetrics[metric.key] ? (metric.color || defaultColors[metric.key] || '#888888') : '#000',
+                marginRight: '10px',
+                boxShadow: 'rgb(250, 250, 250) 1px 1px 0px inset, rgb(0, 0, 0) -1px -1px 0px inset',
+                cursor: 'pointer',
+                flexShrink: 0,
+                transition: '0.2s',
+                position: 'relative',
+                top: '-1px'
+              }}
+            />
+            <label 
+              htmlFor={`checkbox-${metric.key}`}
+              style={{
+                cursor: 'pointer',
+                fontSize: '14px',
+                margin: '0px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                color: 'rgb(13, 13, 13)',
+                userSelect: 'none'
+              }}
+            >
+              {metric.name}
+            </label>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const renderChart = () => {
     if (!chartConfig) return null;
 
     switch (chartConfig.type) {
       case 'enhancedBar':
         const enhancedMetrics = [
-          { key: 'views', name: 'Vistas', color: '#8884d8' },
-          { key: 'interactions', name: 'Interacciones', color: '#82ca9d' },
-          { key: 'follows', name: 'Nuevos Seguidores', color: '#ffc658' }
+          { key: 'views', name: 'Views', color: '#8884d8' },
+          { key: 'interactions', name: 'Interactions', color: '#82ca9d' },
+          { key: 'follows', name: 'New Follows', color: '#ffc658' }
         ];
 
         const enhancedChartData = chartConfig.data.filter((_, index) => {
@@ -194,8 +304,8 @@ const ReelInsight = ({ reel }) => {
 
         return (
           <div style={{ width: '100%' }}>
-            <div style={{ height: '250px', marginBottom: '20px' }}>
-              <ResponsiveContainer>
+            <div style={{ height: '250px', marginBottom: '20px', width: '106%', marginLeft: '-3%', padding: '0 5px' }}>
+              <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart 
                   data={enhancedChartData}
                   margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
@@ -246,10 +356,10 @@ const ReelInsight = ({ reel }) => {
                     ))}
                     <LabelList 
                       dataKey="formatted"
-                      position="insideBottom"
-                      offset={-30}
+                      position="top"
+                      offset={10}
                       style={{ 
-                        fill: '#fff', 
+                        fill: 'black', 
                         fontWeight: 'bold',
                         fontSize: '12px'
                       }}
@@ -258,47 +368,9 @@ const ReelInsight = ({ reel }) => {
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-around', 
-              marginTop: '10px', 
-              padding: '0 20px' 
-            }}>
-              {enhancedMetrics.map((metric) => (
-                <label 
-                  key={metric.key} 
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    cursor: 'pointer',
-                    color: visibleMetrics[metric.key] ? '#000' : '#888',
-                    fontSize: '14px',
-                    userSelect: 'none'
-                  }}
-                >
-                  <input 
-                    type="checkbox" 
-                    checked={visibleMetrics[metric.key]} 
-                    onChange={() => toggleMetric(metric.key)}
-                    style={{
-                      appearance: 'none',
-                      width: '16px',
-                      height: '16px',
-                      border: '2px solid #000',
-                      backgroundColor: visibleMetrics[metric.key] ? metric.color : '#fff',
-                      marginRight: '8px',
-                      position: 'relative',
-                      boxShadow: 'inset 1px 1px 0 #fff, inset -1px -1px 0 #000',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                  />
-                  {metric.name}
-                </label>
-              ))}
-            </div>
+            
+            {renderHorizontalCheckboxes(enhancedMetrics)}
+            
             <p style={{ 
               textAlign: 'center', 
               fontSize: '12px', 
@@ -306,7 +378,7 @@ const ReelInsight = ({ reel }) => {
               fontStyle: 'italic',
               marginTop: '10px'
             }}>
-              Haz clic o pasa el cursor sobre las barras para ver más detalles
+              Pasa el cursor sobre las barras para ver más detalles
             </p>
           </div>
         );
@@ -333,12 +405,89 @@ const ReelInsight = ({ reel }) => {
                 <Tooltip 
                   formatter={(value, name) => [value.toLocaleString(), name]}
                 />
-                <Legend />
+                <Legend content={() => null} />
               </PieChart>
             </ResponsiveContainer>
           </div>
         );
       
+      case 'boxplot':
+        const boxData = chartConfig.data[0];
+        const currentER = parseFloat(engagementRate);
+        const medianER = boxData.median;
+        const minER = boxData.min;
+        const maxER = boxData.max;
+        const q1 = boxData.q1;
+        const q3 = boxData.q3;
+        
+        // Datos para el gráfico de comparación
+        const comparisonData = [
+          { 
+            name: 'Este Reel', 
+            value: currentER,
+            color: currentER >= medianER ? '#82ca9d' : '#ff7300'
+          },
+          { 
+            name: 'Mediana', 
+            value: medianER,
+            color: '#8884d8'
+          }
+        ];
+
+        return (
+          <div style={{ width: '100%', height: '300px' }}>
+            <ResponsiveContainer>
+              <BarChart
+                data={comparisonData}
+                margin={{
+                  top: 20,
+                  right: 30,
+                  left: 20,
+                  bottom: 40,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="name"
+                  label={{ value: 'Métrica', position: 'insideBottom', offset: -10 }}
+                />
+                <YAxis 
+                  label={{ value: 'Tasa de Engagement (%)', angle: -90, position: 'center' }}
+                  domain={[0, Math.max(maxER * 1.5, currentER * 1.5)]}
+                />
+                
+                <Bar 
+                  dataKey="value"
+                  fill="#8884d8"
+                >
+                  {comparisonData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                  <LabelList 
+                    dataKey="value" 
+                    position="top" 
+                    formatter={(value) => `${value.toFixed(2)}%`}
+                  />
+                </Bar>
+                
+                <Tooltip 
+                  formatter={(value) => [`${value}%`, 'Tasa de Engagement']}
+                />
+                
+                <ReferenceLine 
+                  y={medianER}
+                  stroke="#000"
+                  strokeDasharray="3 3"
+                  label={{ value: 'Mediana', position: 'insideTopRight', fill: 'black', }}
+                />
+                
+                <Legend content={() => null} />
+              </BarChart>
+            </ResponsiveContainer>
+           
+          </div>
+        );
+        
       case 'scatter':
         return (
           <ResponsiveContainer width="100%" height={220}>
@@ -501,39 +650,9 @@ const ReelInsight = ({ reel }) => {
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '20px', padding: '0 20px' }}>
-                {metrics.map((metric) => (
-                  <label key={metric.key} style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    cursor: 'pointer',
-                    color: visibleMetrics[metric.key] ? '#000' : '#888',
-                    fontSize: '14px',
-                    userSelect: 'none'
-                  }}>
-                    <input 
-                      type="checkbox" 
-                      checked={visibleMetrics[metric.key]} 
-                      onChange={() => toggleMetric(metric.key)}
-                      style={{
-                        appearance: 'none',
-                        width: '16px',
-                        height: '16px',
-                        border: '2px solid #000',
-                        backgroundColor: visibleMetrics[metric.key] ? metric.color : '#fff',
-                        marginRight: '8px',
-                        position: 'relative',
-                        boxShadow: 'inset 1px 1px 0 #fff, inset -1px -1px 0 #000',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    />
-                    {metric.name}
-                  </label>
-                ))}
-              </div>
+              
+              {renderHorizontalCheckboxes(metrics)}
+              
               <p style={{ 
                 textAlign: 'center', 
                 fontSize: '12px', 
@@ -584,7 +703,11 @@ const ReelInsight = ({ reel }) => {
       boxShadow: 'inset -1px -1px 0 0 #fff, inset 1px 1px 0 0 #808080',
       minHeight: '400px',
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      maxWidth: '380px',
+      margin: '15px auto',
+      width: '100%',
+      boxSizing: 'border-box'
     }}>
       <h4 style={{ 
         margin: '0 0 15px 0', 
@@ -594,7 +717,7 @@ const ReelInsight = ({ reel }) => {
         paddingBottom: '8px',
         borderBottom: '1px solid #c0c0c0'
       }}>
-        📊 Análisis de rendimiento
+        🧐 Análisis de rendimiento
       </h4>
 
       <div
@@ -630,7 +753,7 @@ const ReelInsight = ({ reel }) => {
             fontWeight: 'bold',
           }}
         >
-          <span style={{ marginRight: '6px' }}>🔎</span> Insight:
+          <span style={{ marginRight: '6px' }}>☝️🤓</span> Insight:
         </div>
         <div style={{ paddingLeft: '20px' }}>{chartConfig.insight}</div>
       </div>

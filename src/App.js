@@ -149,7 +149,7 @@ const ReelWindow = ({ reel }) => {
   return (
     <div className="win98-window">
       <div className="win98-title-bar">
-        <span>🖼️ {reel.title} - {formatNumber(reel.views)} vistas</span>
+        <span>🎬 {reel.title} - {formatNumber(reel.views)} vistas</span>
         <div className="win98-title-buttons">
           <button 
             className="win98-button"
@@ -235,11 +235,11 @@ const ReelWindow = ({ reel }) => {
           </thead>
           <tbody>
             <tr>
-              <td><strong>👁️ Views</strong></td>
+              <td><strong>👁️🫦👁️ Views</strong></td>
               <td><strong>{formatNumber(reel.views)}</strong></td>
             </tr>
             <tr>
-              <td><strong>📊 Accounts Reached</strong></td>
+              <td><strong>🦅 Accounts Reached</strong></td>
               <td><strong>{formatNumber(reel.accountsReached)}</strong></td>
             </tr>
             <tr>
@@ -247,7 +247,7 @@ const ReelWindow = ({ reel }) => {
               <td><strong>{formatNumber(reel.likes)}</strong></td>
             </tr>
             <tr>
-              <td><strong>💬 Comments</strong></td>
+              <td><strong>🗣️ Comments</strong></td>
               <td><strong>{formatNumber(reel.comments)}</strong></td>
             </tr>
             <tr>
@@ -263,7 +263,7 @@ const ReelWindow = ({ reel }) => {
               <td><strong>{formatNumber(reel.interactions)}</strong></td>
             </tr>
             <tr>
-              <td><strong>👥 Accounts Engaged</strong></td>
+              <td><strong>🗿 Accounts Engaged</strong></td>
               <td><strong>{formatNumber(reel.accountsEngaged)}</strong></td>
             </tr>
             <tr>
@@ -330,7 +330,7 @@ const StatsPopup = ({ isOpen, onClose, reels }) => {
             </thead>
             <tbody>
               <tr>
-                <td>👁️ Views</td>
+                <td>👁️🫦👁️ Views</td>
                 <td>{formatNumber(totalViews)}</td>
                 <td>{formatNumber(Math.round(totalViews / reels.length))}</td>
               </tr>
@@ -340,7 +340,7 @@ const StatsPopup = ({ isOpen, onClose, reels }) => {
                 <td>{formatNumber(Math.round(totalLikes / reels.length))}</td>
               </tr>
               <tr>
-                <td>💬 Comments</td>
+                <td>🗣️ Comments</td>
                 <td>{formatNumber(totalComments)}</td>
                 <td>{formatNumber(Math.round(totalComments / reels.length))}</td>
               </tr>
@@ -459,7 +459,7 @@ function App() {
             fontWeight: 'bold',
             fontFamily: 'Tahoma, sans-serif'
           }}>
-            📹 Instagram Reels Statistics - Windows 98 Edition
+            ✨Instagram Reels Statistics - Windows 98 Edition✨
           </h1>
         </div>
         
@@ -498,7 +498,7 @@ function App() {
                 textAlign: 'center',
                 color: '#000'
               }}>
-                (programo por comida también🥺) <br/>
+                (programo por comida también👉👈) <br/>
                 @juan_aarias<br/>
                 <div style={{ 
                   display: 'flex', 
