@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import './index.css';
 import InstagramAuth from './components/InstagramAuth';
 import Clippy from './components/Clippy';
+import ReelInsight from './components/ReelInsight';
+import ReelCorrelationAnalysis from './components/ReelCorrelationAnalysis';
 import instagramAPI from './services/instagramGraphAPI';
 
-// Utility function to calculate engagement rate
+// Utility function   to calculate engagement rate
 const calculateEngagementRate = (likes, comments, shares, views) => {
   const totalEngagements = likes + comments + shares;
   return ((totalEngagements / views) * 100).toFixed(2);
@@ -118,6 +120,7 @@ const realReels = [
 
 const ReelWindow = ({ reel }) => {
   const [isMinimized, setIsMinimized] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
 
   const formatNumber = (num) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -147,20 +150,29 @@ const ReelWindow = ({ reel }) => {
   return (
     <div className="win98-window">
       <div className="win98-title-bar">
-        <span>🖼️ {reel.title}</span>
+        <span>🎬 {reel.title} - {formatNumber(reel.views)} vistas</span>
         <div className="win98-title-buttons">
           <button 
             className="win98-button"
+            onClick={() => setShowInsights(!showInsights)}
+            title={showInsights ? 'Ocultar análisis' : 'Mostrar análisis'}
+            style={{ marginRight: '4px' }}
+          >
+            📊
+          </button>
+          <button 
+            className="win98-button"
             onClick={() => setIsMinimized(true)}
-            title="Minimize"
+            title="Minimizar"
           >
             _
           </button>
-          <button className="win98-button" title="Maximize">□</button>
-          <button className="win98-button" title="Close">×</button>
+          <button className="win98-button" title="Maximizar">□</button>
+          <button className="win98-button" title="Cerrar">×</button>
         </div>
       </div>
       <div className="win98-content">
+        {showInsights && <ReelInsight reel={reel} />}
         <div className="reel-thumbnail">
           {reel.thumbnail.startsWith('/imgs/') ? (
             <img 
@@ -179,7 +191,9 @@ const ReelWindow = ({ reel }) => {
               alignItems: 'center',
               justifyContent: 'center',
               width: '100%',
-              height: '100%'
+              height: '100%',
+              backgroundColor: '#f0f0f0',
+              border: '1px dashed #ccc'
             }}
           >
             {reel.thumbnail.startsWith('/imgs/') ? '' : reel.thumbnail}
@@ -222,11 +236,11 @@ const ReelWindow = ({ reel }) => {
           </thead>
           <tbody>
             <tr>
-              <td><strong>👁️ Views</strong></td>
+              <td><strong>👁️🫦👁️ Views</strong></td>
               <td><strong>{formatNumber(reel.views)}</strong></td>
             </tr>
             <tr>
-              <td><strong>📊 Accounts Reached</strong></td>
+              <td><strong>🦅 Accounts Reached</strong></td>
               <td><strong>{formatNumber(reel.accountsReached)}</strong></td>
             </tr>
             <tr>
@@ -234,7 +248,7 @@ const ReelWindow = ({ reel }) => {
               <td><strong>{formatNumber(reel.likes)}</strong></td>
             </tr>
             <tr>
-              <td><strong>💬 Comments</strong></td>
+              <td><strong>🗣️ Comments</strong></td>
               <td><strong>{formatNumber(reel.comments)}</strong></td>
             </tr>
             <tr>
@@ -250,7 +264,7 @@ const ReelWindow = ({ reel }) => {
               <td><strong>{formatNumber(reel.interactions)}</strong></td>
             </tr>
             <tr>
-              <td><strong>👥 Accounts Engaged</strong></td>
+              <td><strong>🗿 Accounts Engaged</strong></td>
               <td><strong>{formatNumber(reel.accountsEngaged)}</strong></td>
             </tr>
             <tr>
@@ -317,7 +331,7 @@ const StatsPopup = ({ isOpen, onClose, reels }) => {
             </thead>
             <tbody>
               <tr>
-                <td>👁️ Views</td>
+                <td>👁️🫦👁️ Views</td>
                 <td>{formatNumber(totalViews)}</td>
                 <td>{formatNumber(Math.round(totalViews / reels.length))}</td>
               </tr>
@@ -327,7 +341,7 @@ const StatsPopup = ({ isOpen, onClose, reels }) => {
                 <td>{formatNumber(Math.round(totalLikes / reels.length))}</td>
               </tr>
               <tr>
-                <td>💬 Comments</td>
+                <td>🗣️ Comments</td>
                 <td>{formatNumber(totalComments)}</td>
                 <td>{formatNumber(Math.round(totalComments / reels.length))}</td>
               </tr>
@@ -446,7 +460,7 @@ function App() {
             fontWeight: 'bold',
             fontFamily: 'Tahoma, sans-serif'
           }}>
-            📹 Instagram Reels Statistics - Windows 98 Edition
+            ✨Instagram Reels Statistics - Windows 98 Edition✨
           </h1>
         </div>
         
@@ -485,7 +499,7 @@ function App() {
                 textAlign: 'center',
                 color: '#000'
               }}>
-                (programo por comida también🥺) <br/>
+                (programo por comida también👉👈) <br/>
                 @juan_aarias<br/>
                 <div style={{ 
                   display: 'flex', 
@@ -551,25 +565,36 @@ function App() {
         </div>
       </div>
 
-      <div 
-        className="reels-grid"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '20px',
-          maxWidth: '1200px',
-          margin: '0 auto'
-        }}
-      >
-        {isLoading ? (
-          <div className="win98-window" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
-            <div style={{ fontSize: '12px' }}>Loading Instagram data...</div>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 15px' }}>
+        <div 
+          className="reels-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: '20px',
+            marginBottom: '30px'
+          }}
+        >
+          {isLoading ? (
+            <div className="win98-window" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+              <div style={{ fontSize: '12px' }}>Loading Instagram data...</div>
+            </div>
+          ) : (
+            reelsData.map(reel => (
+              <ReelWindow key={reel.id} reel={reel} />
+            ))
+          )}
+        </div>
+
+        {/* Correlation Analysis Section */}
+        <div className="win98-window" style={{ marginBottom: '30px' }}>
+          <div className="win98-title-bar">
+            <span>📊 Análisis de Correlación</span>
           </div>
-        ) : (
-          reelsData.map(reel => (
-            <ReelWindow key={reel.id} reel={reel} />
-          ))
-        )}
+          <div className="win98-content" style={{ padding: '15px' }}>
+            <ReelCorrelationAnalysis reelsData={reelsData} />
+          </div>
+        </div>
       </div>
 
       <button 
@@ -612,6 +637,7 @@ function App() {
           </div>
         </div>
       )}
+
 
       <StartBar />
     </div>
