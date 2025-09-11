@@ -23,6 +23,51 @@ const ReelInsight = ({ reel }) => {
   // Calculate engagement rate
   const engagementRate = ((reel.likes + reel.comments + reel.shares) / reel.views * 100).toFixed(2);
   
+  // Sample data for engagement rates (in a real app, this would come from your backend)
+  const engagementRates = [
+    1.8, 2.1, 2.3, 2.5, 2.7, 2.8, 3.0, 3.2, 3.5, 3.7,
+    3.8, 4.0, 4.2, 4.5, 4.7, 4.8, 5.0, 5.2, 5.5, 5.8,
+    6.0, 6.2, 6.5, 6.7, 7.0, 7.2, 7.5, 7.8, 8.0, 8.5
+  ];
+  
+  // Calculate boxplot statistics
+  const calculateBoxplotStats = (data) => {
+    const sorted = [...data].sort((a, b) => a - b);
+    const q1 = quantile(sorted, 0.25);
+    const median = quantile(sorted, 0.5);
+    const q3 = quantile(sorted, 0.75);
+    const iqr = q3 - q1;
+    const lowerWhisker = Math.max(sorted[0], q1 - 1.5 * iqr);
+    const upperWhisker = Math.min(sorted[sorted.length - 1], q3 + 1.5 * iqr);
+    const outliers = sorted.filter(d => d < lowerWhisker || d > upperWhisker);
+    
+    return {
+      min: sorted[0],
+      q1,
+      median,
+      q3,
+      max: sorted[sorted.length - 1],
+      lowerWhisker,
+      upperWhisker,
+      outliers
+    };
+  };
+  
+  // Helper function to calculate quantiles
+  const quantile = (sorted, q) => {
+    const pos = (sorted.length - 1) * q;
+    const base = Math.floor(pos);
+    const rest = pos - base;
+    if (sorted[base + 1] !== undefined) {
+      return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+    } else {
+      return sorted[base];
+    }
+  };
+  
+  const boxplotData = calculateBoxplotStats(engagementRates);
+  const currentER = parseFloat(engagementRate);
+  
   // Data for different chart types
   const getChartData = () => {
     // 🎥 POV: Le pides un lápiz al de sistemas
@@ -67,36 +112,15 @@ const ReelInsight = ({ reel }) => {
         insight: 'No fue el más viral, pero convirtió muy bien, mostrando que los reels de humor de nicho generan engagement profundo.'
       };
     } 
-    // 🎥 Seguridad ante todo
-    else if (reel.title.includes("Seguridad ante todo")) {
-      // Sample data for other reels' engagement rates (in reality, this would come from your data)
-      const otherReelsER = [
-        2.1, 3.8, 4.5, 5.8, 6.2, 4.9, 5.7, 3.9, 4.8, 5.5, 6.8, 5.2, 4.7, 5.9, 6.1
-      ];
-      
-      // Calculate statistics for the boxplot
-      const sortedER = [...otherReelsER].sort((a, b) => a - b);
-      const q1 = sortedER[Math.floor(sortedER.length * 0.25)];
-      const median = sortedER[Math.floor(sortedER.length * 0.5)];
-      const q3 = sortedER[Math.floor(sortedER.length * 0.75)];
-      const iqr = q3 - q1;
-      const lowerWhisker = Math.max(sortedER[0], q1 - 1.5 * iqr);
-      const upperWhisker = Math.min(sortedER[sortedER.length - 1], q3 + 1.5 * iqr);
-      
-      // Current reel's ER
-      const currentER = parseFloat(engagementRate);
-      
+    // 🎥 POV: Te gradúas de ingeniero
+    else if (reel.title.includes("Te gradúas de ingeniero")) {
       return {
         type: 'boxplot',
         data: [
           {
-            name: 'ER de Otros Reels',
-            min: sortedER[0],
-            q1: q1,
-            median: median,
-            q3: q3,
-            max: sortedER[sortedER.length - 1],
-            outliers: sortedER.filter(er => er < lowerWhisker || er > upperWhisker)
+            name: 'Distribución de ER',
+            ...boxplotData,
+            current: currentER
           },
           {
             name: 'Este Reel',
@@ -105,13 +129,13 @@ const ReelInsight = ({ reel }) => {
         ],
         stats: {
           currentER: currentER,
-          medianER: median,
-          minER: sortedER[0],
-          maxER: sortedER[sortedER.length - 1],
-          q1: q1,
-          q3: q3
+          medianER: boxplotData.median,
+          minER: boxplotData.min,
+          maxER: boxplotData.max,
+          q1: boxplotData.q1,
+          q3: boxplotData.q3
         },
-        insight: 'La tasa de engagement de este reel (5.24%) está levemente por encima de la mediana general (5.20%) y dentro del rango intercuartílico típico (4.50% - 5.90%), lo que indica un desempeño estable aunque no excepcional comparado con el resto de los reels.'
+        insight: `La tasa de engagement de este reel (${currentER}%) está ${currentER > boxplotData.median ? 'por encima' : 'por debajo'} de la mediana general (${boxplotData.median.toFixed(2)}%) y ${currentER >= boxplotData.q1 && currentER <= boxplotData.q3 ? 'dentro' : 'fuera'} del rango intercuartílico típico (${boxplotData.q1.toFixed(2)}% - ${boxplotData.q3.toFixed(2)}%), lo que indica un desempeño ${currentER > boxplotData.q3 ? 'superior al promedio' : currentER < boxplotData.q1 ? 'inferior al promedio' : 'estable'} comparado con el resto de los reels.`
       };
     } 
     // 🎥 POV: Se te cae tu botella en San Gil
@@ -125,7 +149,7 @@ const ReelInsight = ({ reel }) => {
             'Cuentas que Interactuaron': reel.accountsEngaged || (reel.likes + reel.comments + reel.shares)
           }
         ],
-        insight: 'Menos views que otros virales, pero gran conversión a seguidores (732), prueba de que la autenticidad convierte.'
+        insight: 'Los resultados muestran una clara preferencia por las respuestas, con la opción más votada alcanzando el 84%. Este tipo de contenido de participación genera una alta interacción, como lo demuestran los comentarios y reacciones. El formato de pregunta directa y las opciones específicas parecen resonar bien con tu audiencia, lo que lo convierte en un formato a replicar.'
       };
     } 
     // 🎥 Qué prenda te daría pena traer a la U
@@ -136,9 +160,36 @@ const ReelInsight = ({ reel }) => {
           { name: 'Me gusta', value: reel.likes },
           { name: 'Comentarios', value: reel.comments },
           { name: 'Compartidos', value: reel.shares },
-          { name: 'Guardados', value: reel.saves }
+          { name: 'Guardados', value: reel.saves || 0 },
+          { name: 'Nuevos seguidores', value: reel.follows }
         ],
-        insight: 'Generó más conversación en comentarios que otros, mostrando que fomenta debate y participación activa.'
+        insight: `Este reel generó una gran interacción con ${reel.likes.toLocaleString()} me gusta y ${reel.comments.toLocaleString()} comentarios. Los compartidos (${reel.shares}) y guardados (${reel.saves || 0}) indican que el contenido es valioso para la audiencia. La conversión a ${reel.follows} nuevos seguidores demuestra que el tema resuena con tu público objetivo.`
+      };
+    } 
+    // 🎥 POV: Seguridad ante todo
+    else if (reel.title.includes("Seguridad ante todo")) {
+      return {
+        type: 'boxplot',
+        data: [
+          {
+            name: 'Distribución de ER',
+            ...boxplotData,
+            current: currentER
+          },
+          {
+            name: 'Este Reel',
+            value: currentER
+          }
+        ],
+        stats: {
+          currentER: currentER,
+          medianER: boxplotData.median,
+          minER: boxplotData.min,
+          maxER: boxplotData.max,
+          q1: boxplotData.q1,
+          q3: boxplotData.q3
+        },
+        insight: `La tasa de engagement de este reel (${currentER}%) está ${currentER > boxplotData.median ? 'por encima' : 'por debajo'} de la mediana general (${boxplotData.median.toFixed(2)}%) y ${currentER >= boxplotData.q1 && currentER <= boxplotData.q3 ? 'dentro' : 'fuera'} del rango intercuartílico típico (${boxplotData.q1.toFixed(2)}% - ${boxplotData.q3.toFixed(2)}%), lo que indica un desempeño ${currentER > boxplotData.q3 ? 'superior al promedio' : currentER < boxplotData.q1 ? 'inferior al promedio' : 'estable'} comparado con el resto de los reels.`
       };
     } 
     // 🎥 POV: Te gradúas de ingeniero
@@ -200,8 +251,7 @@ const ReelInsight = ({ reel }) => {
           <p style={{ fontWeight: 'bold', margin: '0 0 5px 0', color: '#000080' }}>{data.name}</p>
           <p style={{ margin: '0 0 5px 0' }}>{data.details}</p>
           {data.name === 'Interacciones' && (
-            <p style={{ margin: '5px 0 0 0', fontSize: '0.85em', color: '#666' }}>
-              Tasa de engagement: {((payload[0].value / reel.views) * 100).toFixed(2)}%
+            <p style={{ textAlign: 'center', fontSize: '12px', color: '#666', fontStyle: 'italic', margin: '5px 0 0 0' }}>engagement: {((payload[0].value / reel.views) * 100).toFixed(2)}%
             </p>
           )}
         </div>
@@ -223,11 +273,11 @@ const ReelInsight = ({ reel }) => {
       <div style={{
         display: 'flex',
         justifyContent: 'center',
-        gap: '10px',
-        padding: '10px',
+        gap: '8px',
+        padding: '5px',
         flexWrap: 'wrap',
         width: '100%',
-        margin: '10px 0 0 0',
+        margin: '0',
         boxSizing: 'border-box'
       }}>
         {metrics.map((metric) => (
@@ -304,7 +354,7 @@ const ReelInsight = ({ reel }) => {
 
         return (
           <div style={{ width: '100%' }}>
-            <div style={{ height: '250px', marginBottom: '20px', width: '106%', marginLeft: '-3%', padding: '0 5px' }}>
+            <div style={{ height: '250px', marginBottom: '5px', width: '110%', marginLeft: '-5%', padding: '0 10px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart 
                   data={enhancedChartData}
@@ -315,7 +365,7 @@ const ReelInsight = ({ reel }) => {
                     dataKey="name" 
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: '#333' }}
+                    tick={false}
                   />
                   <YAxis 
                     yAxisId="left" 
@@ -396,16 +446,56 @@ const ReelInsight = ({ reel }) => {
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                  label={({ percent }) => `${(percent * 100).toFixed(1)}%`}
+                  labelStyle={{
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    fill: '#333',
+                    textShadow: '0 0 2px white'
+                  }}
                 >
                   {chartConfig.data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={COLORS[index % COLORS.length]}
+                      name={entry.name} // Ensure name is passed for tooltip
+                    />
                   ))}
                 </Pie>
                 <Tooltip 
-                  formatter={(value, name) => [value.toLocaleString(), name]}
+                  formatter={(value, name, props) => [
+                    `${value.toLocaleString()} (${(props.payload.percent * 100).toFixed(1)}%)`,
+                    name
+                  ]}
+                  contentStyle={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    padding: '8px 12px',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                  }}
                 />
-                <Legend content={() => null} />
+                <Legend 
+                  layout="horizontal"
+                  align="center"
+                  verticalAlign="bottom"
+                  formatter={(value, entry, index) => (
+                    <span style={{ 
+                      color: '#333', 
+                      fontSize: '11px',
+                      margin: '0 8px'
+                    }}>
+                      {chartConfig.data[index]?.name}
+                    </span>
+                  )}
+                  wrapperStyle={{
+                    paddingTop: '10px',
+                    fontSize: '12px',
+                    lineHeight: '1.5',
+                    textAlign: 'center',
+                    width: '100%'
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -536,6 +626,7 @@ const ReelInsight = ({ reel }) => {
                   position="top"
                 />
               </Scatter>
+              {chartConfig.type === 'boxplot' && renderBoxplot(chartConfig.data)}
             </ScatterChart>
           </ResponsiveContainer>
         );
@@ -692,6 +783,230 @@ const ReelInsight = ({ reel }) => {
     }
   };
 
+  const renderBoxplot = (data) => {
+    const { min, q1, median, q3, max, lowerWhisker, upperWhisker, outliers, current } = data[0];
+    const width = 800;
+    const height = 400;
+    const padding = 60;
+    const boxWidth = 100;
+    
+    // Scale function for the y-axis
+    const scaleY = (value) => {
+      const range = max - min;
+      return height - padding - ((value - min) / range) * (height - 2 * padding);
+    };
+    
+    // Calculate positions
+    const boxY = scaleY(q3);
+    const boxHeight = scaleY(q1) - boxY;
+    const medianY = scaleY(median);
+    const whiskerBottom = scaleY(lowerWhisker);
+    const whiskerTop = scaleY(upperWhisker);
+    const centerX = width / 2;
+    
+    return (
+      <div style={{ width: '100%', margin: '20px 0' }}>
+        <h3 style={{ textAlign: 'center', marginBottom: '20px' }}>Distribución de Tasas de Engagement</h3>
+        <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>
+          {/* Y Axis */}
+          <line 
+            x1={padding} 
+            y1={height - padding} 
+            x2={padding} 
+            y2={padding} 
+            stroke="#333" 
+            strokeWidth="1.5"
+          />
+          
+          {/* Y Axis Ticks and Labels */}
+          {[min, q1, median, q3, max].map((value, i) => (
+            <g key={`y-tick-${i}`}>
+              <line 
+                x1={padding - 5} 
+                y1={scaleY(value)} 
+                x2={padding} 
+                y2={scaleY(value)} 
+                stroke="#333" 
+                strokeWidth="1"
+              />
+              <text 
+                x={padding - 10} 
+                y={scaleY(value) + 4} 
+                textAnchor="end" 
+                fontSize="12"
+                fill="#333"
+              >
+                {value.toFixed(1)}%
+              </text>
+            </g>
+          ))}
+          
+          {/* X Axis */}
+          <line 
+            x1={padding} 
+            y1={height - padding} 
+            x2={width - padding} 
+            y2={height - padding} 
+            stroke="#333" 
+            strokeWidth="1.5" 
+          />
+          
+          {/* Box */}
+          <rect 
+            x={centerX - boxWidth/2} 
+            y={boxY} 
+            width={boxWidth} 
+            height={boxHeight} 
+            fill="#8884d8" 
+            fillOpacity="0.6"
+            stroke="#5a5aad"
+            strokeWidth="1.5"
+            rx="2"
+          />
+          
+          {/* Median line */}
+          <line 
+            x1={centerX - boxWidth/2} 
+            y1={medianY} 
+            x2={centerX + boxWidth/2} 
+            y2={medianY} 
+            stroke="#ff7300" 
+            strokeWidth="2"
+          />
+          
+          {/* Whiskers */}
+          <line 
+            x1={centerX - boxWidth/4} 
+            y1={whiskerTop} 
+            x2={centerX + boxWidth/4} 
+            y2={whiskerTop} 
+            stroke="#333" 
+            strokeWidth="1.5"
+          />
+          <line 
+            x1={centerX} 
+            y1={whiskerTop} 
+            x2={centerX} 
+            y2={boxY} 
+            stroke="#333" 
+            strokeWidth="1.5"
+          />
+          
+          <line 
+            x1={centerX - boxWidth/4} 
+            y1={whiskerBottom} 
+            x2={centerX + boxWidth/4} 
+            y2={whiskerBottom} 
+            stroke="#333" 
+            strokeWidth="1.5"
+          />
+          <line 
+            x1={centerX} 
+            y1={whiskerBottom} 
+            x2={centerX} 
+            y2={boxY + boxHeight} 
+            stroke="#333" 
+            strokeWidth="1.5"
+          />
+          
+          {/* Outliers */}
+          {outliers && outliers.map((outlier, i) => (
+            <circle 
+              key={`outlier-${i}`}
+              cx={centerX + (i % 2 === 0 ? -1 : 1) * (boxWidth/2 + 20 + (Math.floor(i/2) * 15))} 
+              cy={scaleY(outlier)} 
+              r="4" 
+              fill="#ff4d4f"
+              stroke="#d9363e"
+              strokeWidth="1"
+            />
+          ))}
+          
+          {/* Current Reel's ER */}
+          <circle 
+            cx={width - padding - 50} 
+            cy={scaleY(current)} 
+            r="8" 
+            fill="#52c41a"
+            stroke="#237804"
+            strokeWidth="1.5"
+          />
+          <text 
+            x={width - padding - 35} 
+            y={scaleY(current) + 4} 
+            fontSize="12" 
+            fontWeight="500"
+            fill="#237804"
+          >
+            Este reel: {current}%
+          </text>
+          
+          {/* Legend */}
+          <g transform={`translate(${centerX - 100}, ${padding + 10})`}>
+            <rect x="0" y="0" width="12" height="12" fill="#8884d8" rx="2" />
+            <text x="18" y="10" fontSize="11" fill="#333">Rango intercuartílico (Q1-Q3)</text>
+            
+            <rect x="0" y="20" width="12" height="12" fill="#ff7300" rx="2" />
+            <text x="18" y="30" fontSize="11" fill="#333">Mediana</text>
+            
+            <circle cx="6" y="45" r="4" fill="#ff4d4f" />
+            <text x="18" y="49" fontSize="11" fill="#333">Valores atípicos</text>
+            
+            <circle cx="6" y="65" r="5" fill="#52c41a" stroke="#237804" strokeWidth="1" />
+            <text x="18" y="69" fontSize="11" fill="#333">Este reel</text>
+          </g>
+          
+          {/* Y Axis Label */}
+          <text 
+            x={-height/2} 
+            y="20" 
+            transform="rotate(-90)" 
+            textAnchor="middle" 
+            fontSize="12"
+            fontWeight="500"
+            fill="#333"
+          >
+            Tasa de Engagement (%)
+          </text>
+          
+          {/* Stats Summary */}
+          <g transform={`translate(${centerX - 100}, ${height - padding + 40})`}>
+            <text x="0" y="0" fontSize="12" fontWeight="500" fill="#333">Estadísticas:</text>
+            <text x="0" y="20" fontSize="11" fill="#333">• Mínimo: {min.toFixed(1)}%</text>
+            <text x="150" y="20" fontSize="11" fill="#333">• Q1: {q1.toFixed(1)}%</text>
+            <text x="0" y="40" fontSize="11" fill="#333">• Mediana: {median.toFixed(1)}%</text>
+            <text x="150" y="40" fontSize="11" fill="#333">• Q3: {q3.toFixed(1)}%</text>
+            <text x="0" y="60" fontSize="11" fill="#333">• Máximo: {max.toFixed(1)}%</text>
+            <text x="150" y="60" fontSize="11" fill="#52c41a" fontWeight="500">• Este reel: {current.toFixed(1)}%</text>
+          </g>
+        </svg>
+        
+        <div style={{ 
+          margin: '20px 0 0', 
+          padding: '15px', 
+          backgroundColor: '#f8f9fa', 
+          borderRadius: '6px',
+          borderLeft: '4px solid #8884d8'
+        }}>
+          <p style={{ margin: '0 0 10px 0', fontWeight: '500', color: '#2c3e50' }}>Interpretación del gráfico:</p>
+          <ul style={{ 
+            margin: '0 0 0 20px', 
+            padding: '0',
+            fontSize: '13px',
+            lineHeight: '1.6',
+            color: '#4a5568'
+          }}>
+            <li>La <strong>caja azul</strong> muestra el rango intercuartílico (IQR) que contiene el 50% central de los datos.</li>
+            <li>La <strong>línea naranja</strong> representa la mediana, el valor que divide los datos en dos mitades iguales.</li>
+            <li>Los <strong>bigotes</strong> se extienden hasta el valor mínimo y máximo, excluyendo valores atípicos.</li>
+            <li>Los <strong>puntos rojos</strong> son valores atípicos inusuales que están fuera del rango típico.</li>
+            <li>El <strong>punto verde</strong> muestra la tasa de engagement de este reel en comparación con la distribución general.</li>
+          </ul>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="reel-insight" style={{ 
       border: '2px solid #c0c0c0',
@@ -742,6 +1057,7 @@ const ReelInsight = ({ reel }) => {
           boxShadow: 'inset 1px 1px 0 0 #fff',
           fontSize: '13px',
           lineHeight: '1.4',
+          marginBottom: '15px'
         }}
       >
         <div

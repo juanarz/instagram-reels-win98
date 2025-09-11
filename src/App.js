@@ -3,6 +3,7 @@ import './index.css';
 import InstagramAuth from './components/InstagramAuth';
 import Clippy from './components/Clippy';
 import ReelInsight from './components/ReelInsight';
+import ReelCorrelationAnalysis from './components/ReelCorrelationAnalysis';
 import instagramAPI from './services/instagramGraphAPI';
 
 // Utility function   to calculate engagement rate
@@ -564,25 +565,36 @@ function App() {
         </div>
       </div>
 
-      <div 
-        className="reels-grid"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '20px',
-          maxWidth: '1200px',
-          margin: '0 auto'
-        }}
-      >
-        {isLoading ? (
-          <div className="win98-window" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
-            <div style={{ fontSize: '12px' }}>Loading Instagram data...</div>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 15px' }}>
+        <div 
+          className="reels-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: '20px',
+            marginBottom: '30px'
+          }}
+        >
+          {isLoading ? (
+            <div className="win98-window" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>
+              <div style={{ fontSize: '12px' }}>Loading Instagram data...</div>
+            </div>
+          ) : (
+            reelsData.map(reel => (
+              <ReelWindow key={reel.id} reel={reel} />
+            ))
+          )}
+        </div>
+
+        {/* Correlation Analysis Section */}
+        <div className="win98-window" style={{ marginBottom: '30px' }}>
+          <div className="win98-title-bar">
+            <span>📊 Análisis de Correlación</span>
           </div>
-        ) : (
-          reelsData.map(reel => (
-            <ReelWindow key={reel.id} reel={reel} />
-          ))
-        )}
+          <div className="win98-content" style={{ padding: '15px' }}>
+            <ReelCorrelationAnalysis reelsData={reelsData} />
+          </div>
+        </div>
       </div>
 
       <button 
@@ -625,6 +637,7 @@ function App() {
           </div>
         </div>
       )}
+
 
       <StartBar />
     </div>
