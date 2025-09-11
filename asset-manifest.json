@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/instagram-reels-win98/static/css/main.3355eb5e.css",
+    "main.js": "/instagram-reels-win98/static/js/main.311f4b12.js",
+    "index.html": "/instagram-reels-win98/index.html",
+    "main.3355eb5e.css.map": "/instagram-reels-win98/static/css/main.3355eb5e.css.map",
+    "main.311f4b12.js.map": "/instagram-reels-win98/static/js/main.311f4b12.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.3355eb5e.css",
+    "static/js/main.311f4b12.js"
+  ]
+}
