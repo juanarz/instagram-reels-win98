@@ -3,6 +3,8 @@ import './index.css';
 import InstagramAuth from './components/InstagramAuth';
 import Clippy from './components/Clippy';
 import ReelInsight from './components/ReelInsight';
+import { CSSTransition } from 'react-transition-group';
+import './reelInsightFade.css';
 import ReelCorrelationAnalysis from './components/ReelCorrelationAnalysis';
 import instagramAPI from './services/instagramGraphAPI';
 
@@ -150,29 +152,135 @@ const ReelWindow = ({ reel }) => {
   return (
     <div className="win98-window">
       <div className="win98-title-bar">
-        <span>🎬 {reel.title} - {formatNumber(reel.views)} vistas</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <img 
+            src={process.env.PUBLIC_URL + '/imgs/reels%20covers/film-reel.ico'}
+            alt="Film Reel Icon"
+            style={{ width: '26px', height: '26px', verticalAlign: 'middle' }}
+          />
+          {reel.title} 
+        </span>
         <div className="win98-title-buttons">
           <button 
             className="win98-button"
             onClick={() => setShowInsights(!showInsights)}
             title={showInsights ? 'Ocultar análisis' : 'Mostrar análisis'}
-            style={{ marginRight: '4px' }}
+            style={{ 
+              marginRight: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '2px 4px',
+              width: '28px',
+              height: '28px'
+            }}
+            aria-pressed={showInsights}
           >
-            📊
+            {showInsights ? (
+              <img 
+                src={process.env.PUBLIC_URL + '/imgs/reels%20covers/close.ico'}
+                alt="Cerrar"
+                style={{ 
+                  width: '22px', 
+                  height: '22px', 
+                  objectFit: 'contain',
+                  imageRendering: 'pixelated',
+                  margin: '2px'
+                }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.textContent = showInsights ? '❌' : '📊';
+                }}
+              />
+            ) : (
+              <img 
+                src={process.env.PUBLIC_URL + '/imgs/reels%20covers/stats.ico'}
+                alt="Estadísticas"
+                style={{ 
+                  width: '22px', 
+                  height: '22px', 
+                  objectFit: 'contain',
+                  imageRendering: 'pixelated',
+                  margin: '2px'
+                }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.textContent = showInsights ? '❌' : '📊';
+                }}
+              />
+            )}
           </button>
           <button 
             className="win98-button"
             onClick={() => setIsMinimized(true)}
             title="Minimizar"
+            style={{
+              width: '24px',
+              height: '24px',
+              padding: '0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontFamily: 'Arial',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              margin: '0 1px',
+              color: '#000'
+            }}
           >
-            _
+            ─
           </button>
-          <button className="win98-button" title="Maximizar">□</button>
-          <button className="win98-button" title="Cerrar">×</button>
+          <button 
+            className="win98-button" 
+            title="Maximizar"
+            style={{
+              width: '24px',
+              height: '24px',
+              padding: '0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontFamily: 'Arial',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              margin: '0 1px',
+              color: '#000'
+            }}
+          >
+            □
+          </button>
+          <button 
+            className="win98-button" 
+            title="Cerrar"
+            style={{
+              width: '24px',
+              height: '24px',
+              padding: '0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontFamily: 'Arial',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              margin: '0 1px',
+              color: '#000'
+            }}
+          >
+            ×
+          </button>
         </div>
       </div>
       <div className="win98-content">
-        {showInsights && <ReelInsight reel={reel} />}
+        <CSSTransition
+          in={showInsights}
+          timeout={300}
+          classNames="fade"
+          unmountOnExit
+        >
+          <div>
+            <ReelInsight reel={reel} />
+          </div>
+        </CSSTransition>
         <div className="reel-thumbnail">
           {reel.thumbnail.startsWith('/imgs/') ? (
             <img 
@@ -236,47 +344,102 @@ const ReelWindow = ({ reel }) => {
           </thead>
           <tbody>
             <tr>
-              <td><strong>👁️🫦👁️ Views</strong></td>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img src={process.env.PUBLIC_URL + '/imgs/reels%20covers/views.ico'} alt="Views" style={{ width: '16px', height: '16px', marginRight: '8px' }}/>
+                  <strong>Views</strong>
+                </div>
+              </td>
               <td><strong>{formatNumber(reel.views)}</strong></td>
             </tr>
             <tr>
-              <td><strong>🦅 Accounts Reached</strong></td>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img src={process.env.PUBLIC_URL + '/imgs/reels%20covers/account_reached.ico'} alt="Accounts Reached" style={{ width: '16px', height: '16px', marginRight: '8px' }}/>
+                  <strong>Accounts Reached</strong>
+                </div>
+              </td>
               <td><strong>{formatNumber(reel.accountsReached)}</strong></td>
             </tr>
             <tr>
-              <td><strong>❤️ Likes</strong></td>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img src={process.env.PUBLIC_URL + '/imgs/reels%20covers/likes.ico'} alt="Likes" style={{ width: '16px', height: '16px', marginRight: '8px' }}/>
+                  <strong>Likes</strong>
+                </div>
+              </td>
               <td><strong>{formatNumber(reel.likes)}</strong></td>
             </tr>
             <tr>
-              <td><strong>🗣️ Comments</strong></td>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img src={process.env.PUBLIC_URL + '/imgs/reels%20covers/comments.ico'} alt="Comments" style={{ width: '16px', height: '16px', marginRight: '8px' }}/>
+                  <strong>Comments</strong>
+                </div>
+              </td>
               <td><strong>{formatNumber(reel.comments)}</strong></td>
             </tr>
             <tr>
-              <td><strong>🔖 Saves</strong></td>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img src={process.env.PUBLIC_URL + '/imgs/reels%20covers/saves.ico'} alt="Saves" style={{ width: '16px', height: '16px', marginRight: '8px' }}/>
+                  <strong>Saves</strong>
+                </div>
+              </td>
               <td><strong>{formatNumber(reel.saves)}</strong></td>
             </tr>
             <tr>
-              <td><strong>📤 Shares</strong></td>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img src={process.env.PUBLIC_URL + '/imgs/reels%20covers/shares.ico'} alt="Shares" style={{ width: '16px', height: '16px', marginRight: '8px' }}/>
+                  <strong>Shares</strong>
+                </div>
+              </td>
               <td><strong>{formatNumber(reel.shares)}</strong></td>
             </tr>
             <tr>
-              <td><strong>🤝 Interactions</strong></td>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img src={process.env.PUBLIC_URL + '/imgs/reels%20covers/interactions.ico'} alt="Interactions" style={{ width: '16px', height: '16px', marginRight: '8px' }}/>
+                  <strong>Interactions</strong>
+                </div>
+              </td>
               <td><strong>{formatNumber(reel.interactions)}</strong></td>
             </tr>
             <tr>
-              <td><strong>🗿 Accounts Engaged</strong></td>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img src={process.env.PUBLIC_URL + '/imgs/reels%20covers/accounts_engaged.ico'} alt="Accounts Engaged" style={{ width: '16px', height: '16px', marginRight: '8px' }}/>
+                  <strong>Accounts Engaged</strong>
+                </div>
+              </td>
               <td><strong>{formatNumber(reel.accountsEngaged)}</strong></td>
             </tr>
             <tr>
-              <td><strong>📈 Profile Activity</strong></td>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img src={process.env.PUBLIC_URL + '/imgs/reels%20covers/profile-activity.ico'} alt="Profile Activity" style={{ width: '16px', height: '16px', marginRight: '8px' }}/>
+                  <strong>Profile Activity</strong>
+                </div>
+              </td>
               <td><strong>{formatNumber(reel.profileActivity)}</strong></td>
             </tr>
             <tr>
-              <td><strong>➕ Follows</strong></td>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img src={process.env.PUBLIC_URL + '/imgs/reels%20covers/follows.ico'} alt="Follows" style={{ width: '16px', height: '16px', marginRight: '8px' }}/>
+                  <strong>Follows</strong>
+                </div>
+              </td>
               <td><strong>{formatNumber(reel.follows)}</strong></td>
             </tr>
             <tr>
-              <td><strong>📊 Engagement Rate</strong></td>
+              <td>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <img src={process.env.PUBLIC_URL + '/imgs/reels%20covers/engagement-rate.ico'} alt="Engagement Rate" style={{ width: '16px', height: '16px', marginRight: '8px' }}/>
+                  <strong>Engagement Rate</strong>
+                </div>
+              </td>
               <td><strong>{calculateEngagementRate(reel.likes, reel.comments, reel.shares, reel.views)}%</strong></td>
             </tr>
           </tbody>

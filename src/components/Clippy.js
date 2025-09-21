@@ -26,15 +26,7 @@ const Clippy = () => {
 
   return (
     <div className="clippy-container">
-      {showBalloon && (
-        <div className="clippy-balloon" ref={balloonRef}>
-          <div className="balloon-content">
-            <div className="balloon-text">
-              ¿Quieres tener más visibilidad en tus Reels?
-            </div>
-          </div>
-        </div>
-      )}
+      {/* clippy-balloon element removed as requested */}
       <div className="clippy-content">
         <img 
           src={process.env.PUBLIC_URL + "/imgs/reels covers/Clippy.png"} 

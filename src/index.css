@@ -688,3 +688,13 @@ body {
     transform: translateX(calc(-100% - 20px));
   }
 }
+
+/* Emphasize only the 'Mostrar análisis' button on hover */
+button.win98-button[title="Mostrar análisis"]:hover,
+button.win98-button[title="Ocultar análisis"]:hover {
+  background: #e0eaff;
+  border-color: #1d4ed8;
+  color: #1d4ed8;
+  box-shadow: 0 0 0 2px #93c5fd, 0 2px 8px 0 rgba(59,130,246,0.10);
+  z-index: 2;
+}
